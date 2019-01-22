@@ -104,10 +104,15 @@ public:
         return "WPAPass";
     }
 
-private:
     /// Create pointer analysis according to specified kind and analyze the module.
     void runPointerAnalysis(SVFModule svfModule, u32_t kind);
 
+    PointerAnalysis &getPTA() {
+        assert(_pta);
+        return  *_pta;
+    }
+
+private:
     PTAVector ptaVector;	///< all pointer analysis to be executed.
     PointerAnalysis* _pta;	///<  pointer analysis to be executed.
 };
