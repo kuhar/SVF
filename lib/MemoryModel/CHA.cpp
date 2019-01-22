@@ -164,7 +164,9 @@ void CHGraph::buildCHGOnBasicBlock(const BasicBlock *B,
                 continue;
             if ((relationType == CONSTRUCTOR && isConstructor(callee)) ||
                     (relationType == DESTRUCTOR && isDestructor(callee))) {
-                if (cs.arg_size() < 1 || (cs.paramHasAttr(1, Attribute::StructRet) && cs.arg_size() < 2))
+                // XXX: SVF BUG -- attribute indexing messed up?
+                if (cs.arg_size() < 1 || (cs.getCalledFunction() && cs.getCalledFunction()->getNumOperands() > 1 &&
+                                          cs.paramHasAttr(1, Attribute::StructRet) && cs.arg_size() < 2))
                     continue;
                 const Value *thisPtr = getVCallThisPtr(cs);
                 if (thisPtr != NULL) {
