@@ -93,6 +93,10 @@ void CHGraph::buildCHG(SVFModule svfModule) {
     timeStart = CLOCK_IN_MS();
 
     svfMod = svfModule;
+
+    // XXX: Disable CHG construction -- crashes on our bitcode.
+    return;
+
     u32_t moduleNum = svfModule.getModuleNum();
     for (u32_t i = 0; i < moduleNum; ++i) {
         Module *m = svfModule.getModule(i);
