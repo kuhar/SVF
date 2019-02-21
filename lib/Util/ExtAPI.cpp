@@ -9,10 +9,16 @@
 
 #include "Util/ExtAPI.h"
 #include <stdio.h>
+#include <set>
+#include <string>
 
 using namespace std;
 
 ExtAPI* ExtAPI::extAPI = NULL;
+
+namespace sea_svf {
+  const std::set<std::string> *SeaAllocWrappers = nullptr;
+} // namespace sea_svf
 
 struct ei_pair {
     const char *n;
@@ -839,9 +845,17 @@ void ExtAPI::init() {
     set<extf_t> t_seen;
     extf_t prev_t= EFT_NOOP;
     t_seen.insert(EFT_NOOP);
+
+  if (sea_svf::SeaAllocWrappers)
+    for (const std::string &functionName : *sea_svf::SeaAllocWrappers)
+      info[functionName] = EFT_ALLOC;
+
     for(const ei_pair *p= ei_pairs; p->n; ++p) {
         if(p->t != prev_t) {
-            //This will detect if you move an entry to another block
+          if (p->t == EFT_ALLOC && sea_svf::SeaAllocWrappers)
+            continue;
+
+          //This will detect if you move an entry to another block
             //  but forget to change the type.
             if(t_seen.count(p->t)) {
                 fputs(p->n, stderr);
@@ -851,11 +865,16 @@ void ExtAPI::init() {
             t_seen.insert(p->t);
             prev_t= p->t;
         }
-        if(info.count(p->n)) {
-            fputs(p->n, stderr);
-            putc('\n', stderr);
-            assert(!"duplicate name in ei_pairs");
+        if (info.count(p->n)) {
+          if (sea_svf::SeaAllocWrappers &&
+              sea_svf::SeaAllocWrappers->count(p->n) > 0)
+            continue;
+
+          fputs(p->n, stderr);
+          putc('\n', stderr);
+          assert(!"duplicate name in ei_pairs");
         }
+
         info[p->n]= p->t;
     }
 }

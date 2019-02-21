@@ -66,8 +66,10 @@ void FlowSensitive::analyze(SVFModule svfModule) {
     do {
         numOfIteration++;
 
-        if(0 == numOfIteration % OnTheFlyIterBudgetForStat)
-            dumpStat();
+        if(0 == numOfIteration % OnTheFlyIterBudgetForStat) {
+            // XXX: Disable stats -- too much printing.
+            //dumpStat();
+        }
 
         callGraphSCC->find();
 

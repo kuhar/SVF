@@ -83,7 +83,8 @@ void Andersen::analyze(SVFModule svfModule) {
             numOfIteration++;
 
             if(0 == numOfIteration % OnTheFlyIterBudgetForStat) {
-                dumpStat();
+                // XXX: Disable stats -- too much printing.
+                //dumpStat();
             }
 
             reanalyze = false;
@@ -117,7 +118,8 @@ void Andersen::processNode(NodeID nodeId) {
 
     numOfIteration++;
     if (0 == numOfIteration % OnTheFlyIterBudgetForStat) {
-        dumpStat();
+        // XXX: Disable stats -- too much printing.
+        //dumpStat();
     }
 
     ConstraintNode* node = consCG->getConstraintNode(nodeId);
